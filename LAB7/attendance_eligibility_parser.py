@@ -1,25 +1,56 @@
 def normalize_srn(srn):
     """
     Trims and upper-cases a student registration number.
-    Assumes srn is a non-empty string.
+    Handles invalid input without crashing.
     """
-    return srn.strip().replace(' ', '').upper()
+    try:
+        if not isinstance(srn, str):
+            return ""
+        return srn.strip().replace(" ", "").upper()
+    except Exception:
+        return ""
+
 
 def attendance_from_ratio(text):
     """
     Converts 'ATTENDED/HELD' into a whole-number percentage.
-    Assumes both values are whole numbers and HELD is not zero.
+    Handles invalid input without crashing.
     """
-    attended, held = text.split('/')
-    return int(attended) * 100 // int(held)
+    try:
+        if not isinstance(text, str):
+            return 0
+
+        attended, held = text.split('/')
+
+        attended = int(attended.strip())
+        held = int(held.strip())
+
+        if held == 0:
+            return 0
+
+        return attended * 100 // held
+    except (ValueError, TypeError, ZeroDivisionError):
+        return 0
+
 
 def attendance_from_register(marks):
     """
-    Works out the attendance percentage from a string of P (present) and A (absent).
-    Assumes marks has at least one character.
+    Calculates attendance percentage from P (present) and A (absent).
+    Handles invalid input without crashing.
     """
-    marks = marks.strip().upper()
-    return marks.count('P') * 100 // len(marks)
+    try:
+        if not isinstance(marks, str):
+            return 0
+
+        marks = marks.strip().upper()
+
+        if not marks:
+            return 0
+
+        return marks.count('P') * 100 // len(marks)
+    except Exception:
+        return 0
+
 
 def main():
     print("==== Running normalize_srn ====")
@@ -27,12 +58,15 @@ def main():
     print("Normalized SRN:", normalize_srn(value))
 
     print("\n==== Running attendance_from_ratio ====")
-    value = input("Enter classes attended and held as ATTENDED/HELD (e.g. 30/40): ")
+    value = input(
+        "Enter classes attended and held as ATTENDED/HELD (e.g. 30/40): "
+    )
     print("Attendance percent:", attendance_from_ratio(value))
 
     print("\n==== Running attendance_from_register ====")
     value = input("Enter the register as P/A marks (e.g. PPAPP): ")
     print("Attendance percent:", attendance_from_register(value))
+
 
 if __name__ == "__main__":
     main()
